@@ -15,4 +15,3 @@ class PostForm(ModelForm):
         help_texts = {
             'group': _('Необязательно к заполнению'),
         }
-
