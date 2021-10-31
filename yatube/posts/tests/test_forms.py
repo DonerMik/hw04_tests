@@ -37,7 +37,7 @@ class PostsFormTest(TestCase):
         }
         self.authorized_client.post(
             reverse('posts:post_create'), data=form_date, follow=True)
-        self.assertEqual(post_count+1, Post.objects.count())
+        self.assertEqual(post_count + 1, Post.objects.count())
 
     def test_create_post_change_post(self):
         post_id = PostsFormTest.post.pk

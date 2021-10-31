@@ -79,7 +79,7 @@ class PostViewsTests(TestCase):
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
         }
-        # Проверяем, что типы полей формы в словаре context соответствуют ожиданиям
+        # Проверяем, что типы полей формы в словаре context соотв. ожиданиям
         for value, expected in form_fields.items():
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
@@ -94,7 +94,7 @@ class PostViewsTests(TestCase):
         }
         response = self.authorized_client.get(
             reverse('posts:post_create'))
-        # Проверяем, что типы полей формы в словаре context соответствуют ожиданиям
+        # Проверяем, что типы полей формы в словаре context соотв. ожиданиям
         for value, expected in form_fields.items():
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
@@ -145,7 +145,7 @@ class PaginatorViewsTest(TestCase):
             title='test-slug',
             slug='test-slug',
             description='Tестовое описание')
-# не понял как создавать по другому объекты через bulk_create
+        # не понял как создавать по другому объекты через bulk_create
 
         cls.creater_post = Post.objects.bulk_create([
             Post(author=cls.user, text='Тестовый текст 1', group=cls.group),

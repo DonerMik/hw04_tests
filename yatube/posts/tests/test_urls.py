@@ -47,7 +47,8 @@ class PostURLTests(TestCase):
 
     def test_url_author_edit(self):
         post_id = PostURLTests.post.pk
-        response = self.authorized_client.get(f'/posts/{post_id}/edit/', follow=True)
+        response = self.authorized_client.get(
+            f'/posts/{post_id}/edit/', follow=True)
         self.assertTemplateUsed(response, 'posts/create_post.html')
 
     def test_url_create(self):
