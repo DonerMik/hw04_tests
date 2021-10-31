@@ -192,12 +192,12 @@ class PaginatorViewsTest(TestCase):
 
     def test_first_page_profile_contains_ten_records(self):
         response = self.guest_client.get(reverse('posts:profile',
-                                                 kwargs={'username': 'auth'}))
+                            kwargs={'username': 'auth'}))
         # Проверка: количество постов на первой странице равно 10.
         self.assertEqual(len(response.context['page_obj']), 10)
 
     def test_second_page_profile_contains_three_records(self):
         # Проверка: на второй странице должно быть три поста.
         response = self.guest_client.get(reverse('posts:profile',
-                                                 kwargs={'username': 'auth'}) + '?page=2')
+                            kwargs={'username': 'auth'}) + '?page=2')
         self.assertEqual(len(response.context['page_obj']), 3)

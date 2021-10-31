@@ -48,3 +48,4 @@ class PostsFormTest(TestCase):
             reverse('posts:post_edit', kwargs={'post_id': post_id}),
             data=form_date, follow=True)
         self.assertEqual(response.context['post'].text, 'Текст из формы')
+
