@@ -1,7 +1,8 @@
+from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-from http import HTTPStatus
 
 from ..forms import PostForm
 from ..models import Group, Post
@@ -74,5 +75,6 @@ class PostsFormTest(TestCase):
             reverse('posts:post_create'), data=form_date, follow=True)
         new_post_count = Post.objects.count()
         self.assertRedirects(response,
-                             f"{reverse('users:login')}?next={reverse('posts:post_create')}")
+                             f"{reverse('users:login')}?next="
+                             f"{reverse('posts:post_create')}")
         self.assertEqual(post_count, new_post_count)

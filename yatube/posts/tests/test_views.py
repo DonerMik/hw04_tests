@@ -1,8 +1,8 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-from django.conf import settings
 
 from ..models import Group, Post
 
@@ -75,7 +75,8 @@ class PostViewsTests(TestCase):
         post_id = PostViewsTests.post.pk
         """Шаблон edit сформирован с правильным контекстом."""
         response = self.authorized_client.get(
-            reverse('posts:post_edit', kwargs={'post_id': post_id}))
+            reverse('posts:post_edit',
+                    kwargs={'post_id': post_id}))
         # Словарь ожидаемых типов полей формы:
         # указываем, объектами какого класса должны быть поля формы
         form_fields = {
@@ -166,11 +167,13 @@ class PaginatorViewsTest(TestCase):
     def test_first_page_index_contains_ten_records(self):
         response = self.guest_client.get(reverse('posts:index'))
         # Проверка: количество постов на первой странице равно 10.
-        self.assertEqual(len(response.context['page_obj']), settings.COUNT_IN_PAGES)
+        self.assertEqual(len(response.context['page_obj']),
+                         settings.COUNT_IN_PAGES)
 
     def test_second_page_index_contains_three_records(self):
         # Проверка: на второй странице должно быть три поста.
-        response = self.guest_client.get(reverse('posts:index') + '?page=2')
+        response = self.guest_client.get(
+            reverse('posts:index') + '?page=2')
         self.assertEqual(len(response.context['page_obj']),
                          PaginatorViewsTest.second_page_post)
 
