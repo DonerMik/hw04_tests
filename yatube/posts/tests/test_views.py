@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.conf import settings
 
 from ..models import Group, Post
 
@@ -39,9 +40,11 @@ class PostViewsTests(TestCase):
         templates_pages_names = {
             'posts/index.html': reverse('posts:index'),
             'posts/group_list.html':
-                reverse('posts:group_list', kwargs={'slug': 'test-slug'}),
+                reverse('posts:group_list',
+                        kwargs={'slug': PostViewsTests.group.slug}),
             'posts/profile.html': reverse(
-                'posts:profile', kwargs={'username': 'den'}),
+                'posts:profile',
+                kwargs={'username': PostViewsTests.user}),
             'posts/post_detail.html': reverse(
                 'posts:post_detail', kwargs={'post_id': str(post_id)})
         }
@@ -145,23 +148,15 @@ class PaginatorViewsTest(TestCase):
             title='test-slug',
             slug='test-slug',
             description='Tестовое описание')
-        # не понял как создавать по другому объекты через bulk_create
 
-        cls.creater_post = Post.objects.bulk_create([
-            Post(author=cls.user, text='Тестовый текст 1', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 2', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 3', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 4', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 5', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 6', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 7', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 8', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 9', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 10', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 11', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 12', group=cls.group),
-            Post(author=cls.user, text='Тестовый текст 13', group=cls.group)
-        ])
+        list_posts_objects = [Post(
+            author=cls.user,
+            text=f'Тест текст {post}',
+            group=cls.group) for post in range(1, 14)
+        ]
+
+        cls.creater_post = Post.objects.bulk_create(list_posts_objects)
+        cls.second_page_post = 3
 
     def setUp(self):
         self.guest_client = Client()
@@ -171,37 +166,42 @@ class PaginatorViewsTest(TestCase):
     def test_first_page_index_contains_ten_records(self):
         response = self.guest_client.get(reverse('posts:index'))
         # Проверка: количество постов на первой странице равно 10.
-        self.assertEqual(len(response.context['page_obj']), 10)
+        self.assertEqual(len(response.context['page_obj']), settings.COUNT_IN_PAGES)
 
     def test_second_page_index_contains_three_records(self):
         # Проверка: на второй странице должно быть три поста.
         response = self.guest_client.get(reverse('posts:index') + '?page=2')
-        self.assertEqual(len(response.context['page_obj']), 3)
+        self.assertEqual(len(response.context['page_obj']),
+                         PaginatorViewsTest.second_page_post)
 
     def test_first_page_group_list_contains_ten_records(self):
         response = self.guest_client.get(
             reverse('posts:group_list',
-                    kwargs={'slug': 'test-slug'}))
+                    kwargs={'slug': PaginatorViewsTest.group.slug}))
         # Проверка: количество постов на первой странице равно 10.
-        self.assertEqual(len(response.context['page_obj']), 10)
+        self.assertEqual(len(response.context['page_obj']),
+                         settings.COUNT_IN_PAGES)
 
     def test_second_page_group_list_contains_three_records(self):
         # Проверка: на второй странице должно быть три поста.
         response = self.guest_client.get(
             reverse('posts:group_list',
-                    kwargs={'slug': 'test-slug'}) + '?page=2')
-        self.assertEqual(len(response.context['page_obj']), 3)
+                    kwargs={'slug': PaginatorViewsTest.group.slug}) + '?page=2')
+        self.assertEqual(len(response.context['page_obj']),
+                         PaginatorViewsTest.second_page_post)
 
     def test_first_page_profile_contains_ten_records(self):
         response = self.guest_client.get(
             reverse('posts:profile',
-                    kwargs={'username': 'auth'}))
+                    kwargs={'username': PaginatorViewsTest.user}))
         # Проверка: количество постов на первой странице равно 10.
-        self.assertEqual(len(response.context['page_obj']), 10)
+        self.assertEqual(len(response.context['page_obj']),
+                         settings.COUNT_IN_PAGES)
 
     def test_second_page_profile_contains_three_records(self):
         # Проверка: на второй странице должно быть три поста.
         response = self.guest_client.get(
             reverse('posts:profile',
-                    kwargs={'username': 'auth'}) + '?page=2')
-        self.assertEqual(len(response.context['page_obj']), 3)
+                    kwargs={'username': PaginatorViewsTest.user}) + '?page=2')
+        self.assertEqual(len(response.context['page_obj']),
+                         PaginatorViewsTest.second_page_post)
