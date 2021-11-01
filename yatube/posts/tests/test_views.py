@@ -189,9 +189,8 @@ class PaginatorViewsTest(TestCase):
         # Проверка: на второй странице должно быть три поста.
         response = self.guest_client.get(
             reverse('posts:group_list',
-                    kwargs={
-                        'slug': PaginatorViewsTest.group.slug
-                            }) + '?page=2')
+                    kwargs={'slug': PaginatorViewsTest.group.slug}),
+            '?page=2')
         self.assertEqual(len(response.context['page_obj']),
                          PaginatorViewsTest.second_page_post)
 
