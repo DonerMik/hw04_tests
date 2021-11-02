@@ -74,7 +74,8 @@ class PostsFormTest(TestCase):
         response = self.guest_client.post(
             reverse('posts:post_create'), data=form_date, follow=True)
         new_post_count = Post.objects.count()
+        reverse_login = reverse('users:login')
+        reverse_post_create = reverse('posts:post_create')
         self.assertRedirects(response,
-                             f"{reverse('users:login')}?next="
-                             f"{reverse('posts:post_create')}")
+                             f"{reverse_login}?next={reverse_post_create}")
         self.assertEqual(post_count, new_post_count)

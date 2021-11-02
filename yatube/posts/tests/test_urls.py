@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 
@@ -33,10 +35,13 @@ class PostURLTests(TestCase):
     def test_urls_uses_correct_template(self):
         url_post_id = f'/posts/{PostURLTests.post.pk}/'
         """URL-адрес использует соответствующий шаблон"""
+        url_index = '/'
+        url_group = '/group/test-slug/'
+        url_profile = '/profile/auth/'
         templates_url_names = {
-            '/': 'posts/index.html',
-            '/group/test-slug/': 'posts/group_list.html',
-            '/profile/auth/': 'posts/profile.html',
+            url_index: 'posts/index.html',
+            url_group: 'posts/group_list.html',
+            url_profile: 'posts/profile.html',
             url_post_id: 'posts/post_detail.html',
         }
 
@@ -57,4 +62,4 @@ class PostURLTests(TestCase):
 
     def test_unexist_page(self):
         response = self.guest_client.get('/unexisting_page/')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
